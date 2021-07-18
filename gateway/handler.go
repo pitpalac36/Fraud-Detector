@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"time"
 )
 
 const ms1Addr = ""
@@ -19,34 +20,37 @@ func handleConnection(conn net.Conn) {
 		if err != nil {
 			log.Fatal(err.Error())
 		}
-		log.Println(*tran)
-		//output := Output{
-		//	ID:        encodeAddr(conn.RemoteAddr()),
-		//	Timestamp: time.Now(),
-		//	Tran:      *tran,
-		//}
-		//if err = sendOutput(&output); err != nil {
-		//	log.Fatal(err.Error())
-		//}
+		//log.Println(*tran)
+		output := Output{
+			ID:        encodeAddr(conn.RemoteAddr()),
+			Timestamp: time.Now(),
+			Tran:      *tran,
+		}
+		if err = sendOutput(&output); err != nil {
+			log.Fatal(err.Error())
+		}
 	}
 }
 
-func decodeTran(payload []byte) (tran *Transaction, err error) {
-	err = json.Unmarshal(payload, tran)
+func encodeAddr(addr net.Addr) string {
+	return base64.StdEncoding.EncodeToString([]byte(addr.String()))
+}
+
+func decodeAddr(code string) (addr []byte, err error) {
+	addr, err = base64.StdEncoding.DecodeString(code)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("here", tran)
-	return tran, nil
-}
-
-func encodeAddr(addr net.Addr) (code []byte) {
-	base64.StdEncoding.Encode(code, []byte(addr.String()))
-	return code
+	return addr, nil
 }
 
 func sendOutput(output *Output) error {
-	log.Println(*output)
+	//fmt.Println((*output).ID)
+	addr, err := decodeAddr(output.ID)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	fmt.Println(string(addr))
 	//conn, err := net.Dial("tcp", ms1Addr)
 	//if err != nil {
 	//	return err

@@ -4,7 +4,6 @@ from utils.data_utils import normalization, split_data, balance_histogram
 from imblearn.over_sampling import SMOTE
 from pymongo import MongoClient
 from pprint import pprint
-
 from utils.metrics_utils import get_confusion_matrix
 
 
@@ -70,33 +69,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

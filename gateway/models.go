@@ -1,6 +1,9 @@
 package main
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 type Transaction struct {
 	V1     float64 `json:"v1"`
@@ -35,7 +38,11 @@ type Transaction struct {
 }
 
 type Output struct {
-	ID        []byte      `json:"id"`
+	ID        string      `json:"id"`
 	Timestamp time.Time   `json:"timestamp"`
 	Tran      Transaction `json:"tran"`
+}
+
+func (output Output) String() string {
+	return fmt.Sprintf("{ ID: %s, Timestamp: %s, Transaction: %Tran }", output.ID, output.Timestamp, output.Tran)
 }
