@@ -10,6 +10,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"sync"
 	"time"
 )
 
@@ -45,20 +46,40 @@ func main() {
 	}
 	crs, err := client.Database("creditcards").Collection("values").Find(ctx, bson.D{})
 
-	for crs.Next(ctx) {
-		var res Value
-		if err := crs.Decode(&res); err != nil {
-			log.Fatal(err.Error())
-		}
-		go func() {
-			err = encoder.Encode(res)
-		}()
-	}
-
-	if err := crs.Err(); err != nil {
+	crs.Next(ctx)
+	var res Value
+	if err = crs.Decode(&res); err != nil {
 		log.Fatal(err.Error())
 	}
 
+	var wg sync.WaitGroup
+	wg.Add(50000)
+
+	for i := 0; i < 50000; i++ {
+		go func() {
+			err = encoder.Encode(res)
+			if err != nil {
+				log.Fatal(err.Error())
+			}
+			wg.Done()
+		}()
+	}
+
+	wg.Wait()
+
+	//for crs.Next(ctx) {
+	//	var res Value
+	//	if err := crs.Decode(&res); err != nil {
+	//		log.Fatal(err.Error())
+	//	}
+	//	go func() {
+	//		err = encoder.Encode(res)
+	//	}()
+	//}
+
+	if err = crs.Err(); err != nil {
+		log.Fatal(err.Error())
+	}
 
 	duration := time.Since(start)
 	log.Println(duration.Seconds())

@@ -4,23 +4,29 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net"
 	"time"
 )
 
-const ms1Addr = ""
+const ms1Addr = "localhost:8081"
 
 func handleConnection(conn net.Conn) {
+	counter := 0
 	var tran = &Transaction{}
 	var err error
 	decoder := json.NewDecoder(conn)
 	for {
 		err = decoder.Decode(tran)
 		if err != nil {
+			if err == io.ErrUnexpectedEOF || err == io.EOF{
+				break
+			}
 			log.Fatal(err.Error())
 		}
-		//log.Println(*tran)
+		counter++
+		fmt.Println(counter)
 		output := Output{
 			ID:        encodeAddr(conn.RemoteAddr()),
 			Timestamp: time.Now(),
@@ -45,12 +51,12 @@ func decodeAddr(code string) (addr []byte, err error) {
 }
 
 func sendOutput(output *Output) error {
-	//fmt.Println((*output).ID)
-	addr, err := decodeAddr(output.ID)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	fmt.Println(string(addr))
+	fmt.Println(output)
+	//addr, err := decodeAddr(output.ID)
+	//if err != nil {
+	//	log.Fatal(err.Error())
+	//}
+	//fmt.Println(string(addr))
 	//conn, err := net.Dial("tcp", ms1Addr)
 	//if err != nil {
 	//	return err
