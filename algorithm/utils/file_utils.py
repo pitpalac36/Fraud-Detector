@@ -6,7 +6,7 @@ def read_from_csv(fileName):
         csv_reader = csv.reader(csv_file, delimiter=',')
         line_count = 0
         for row in csv_reader:
-            print(line_count)
+            # print(line_count)
             if line_count == 10000:
                 break
             if line_count != 0:

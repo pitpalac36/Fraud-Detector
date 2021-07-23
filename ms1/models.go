@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 	"time"
 )
 
@@ -37,6 +38,11 @@ type TransactionData struct {
 	Amount float64 `json:"amount"`
 }
 
+type NormDTO struct {
+	TranID string `json:"tran_id"`
+	Data   [29]float64 `json:"data"`
+}
+
 type Transaction struct {
 	ID        string          `json:"id"`
 	Source    string          `json:"source"`
@@ -44,6 +50,18 @@ type Transaction struct {
 	Tran      TransactionData `json:"tran"`
 }
 
-func (output Transaction) String() string {
-	return fmt.Sprintf("{ ID: %s, Timestamp: %s, TransactionData: %Tran }", output.ID, output.Timestamp, output.Tran)
+func (t Transaction) String() string {
+	return fmt.Sprintf("{ ID: %s, Timestamp: %s, TransactionData: %Tran }", t.ID, t.Timestamp, t.Tran)
+}
+
+func (t Transaction) TranToNorm() NormDTO {
+	values := reflect.ValueOf(t.Tran)
+	data := [29]float64{}
+	for i := 0; i < 29; i++ {
+		data[i] = values.Field(i).Float()
+	}
+	return NormDTO{
+		TranID: t.ID,
+		Data:   data,
+	}
 }

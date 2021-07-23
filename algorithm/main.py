@@ -17,14 +17,13 @@ def generate_frauds(trainInputs, trainOutputs):
 
 def main():
     # read data from csv/db
-    inputs, outputs = read_from_csv('data/creditcard.csv')
+    inputs, outputs = read_from_csv('/home/pitpalac/Projects/Fraud-Detector/algorithm/data/creditcard.csv')
     # view data balance before oversampling
     balance_histogram(outputs)
     # normalise data
     normalisedInputs = normalization(inputs)
 
-    print(inputs[0])
-    print(normalization(inputs[0]))
+    print(normalisedInputs)
 
     # split data into train inputs and train outputs
     trainInputs, trainOutputs, testInputs, testOutputs = split_data(normalisedInputs, outputs)

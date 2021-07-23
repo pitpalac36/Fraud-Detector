@@ -53,9 +53,9 @@ func main() {
 	}
 
 	var wg sync.WaitGroup
-	wg.Add(50000)
+	wg.Add(20000)
 
-	for i := 0; i < 50000; i++ {
+	for i := 0; i < 20000; i++ {
 		go func() {
 			err = encoder.Encode(res)
 			if err != nil {

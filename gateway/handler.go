@@ -11,10 +11,11 @@ import (
 )
 
 const ms1Addr = "localhost:8081"
+var ms1_conn net.Conn = nil
 
 func handleConnection(conn net.Conn) {
 	counter := 0
-	var tran = &Transaction{}
+	var tran = &TransactionData{}
 	var err error
 	decoder := json.NewDecoder(conn)
 	for {
@@ -27,7 +28,7 @@ func handleConnection(conn net.Conn) {
 		}
 		counter++
 		fmt.Println(counter)
-		output := Output{
+		output := Transaction {
 			ID:        encodeAddr(conn.RemoteAddr()),
 			Timestamp: time.Now(),
 			Tran:      *tran,
@@ -50,23 +51,27 @@ func decodeAddr(code string) (addr []byte, err error) {
 	return addr, nil
 }
 
-func sendOutput(output *Output) error {
+func sendOutput(output *Transaction) error {
+	counter := 0
+	addr, err := decodeAddr(output.ID)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	fmt.Println(string(addr))
+	if ms1_conn == nil {
+		ms1_conn, err = net.Dial("tcp", ms1Addr)
+		if err != nil {
+			return err
+		}
+	}
+	b, err := json.Marshal(output)
+	if err != nil {
+		return err
+	}
+	if _, err = ms1_conn.Write(b); err != nil {
+		return err
+	}
+	counter++
 	fmt.Println(output)
-	//addr, err := decodeAddr(output.ID)
-	//if err != nil {
-	//	log.Fatal(err.Error())
-	//}
-	//fmt.Println(string(addr))
-	//conn, err := net.Dial("tcp", ms1Addr)
-	//if err != nil {
-	//	return err
-	//}
-	//b, err := json.Marshal(output)
-	//if err != nil {
-	//	return err
-	//}
-	//if _, err = conn.Write(b); err != nil {
-	//	return err
-	//}
 	return nil
 }
