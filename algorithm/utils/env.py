@@ -11,11 +11,3 @@ def get_db_info():
     return url, db_name, col_name
 
 
-def get_scaler_file():
-    load_dotenv()
-    return str(os.getenv('SCALER_FILE'))
-
-
-def get_regressor_file():
-    load_dotenv()
-    return str(os.getenv('REGRESSOR_FILE'))

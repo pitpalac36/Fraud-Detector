@@ -1,3 +1,4 @@
+from common.prediction import predict
 
 
 def get_confusion_matrix(lr, testInputs, testOutputs):
@@ -7,7 +8,7 @@ def get_confusion_matrix(lr, testInputs, testOutputs):
     true_negative = 0
     for i in range(len(testInputs)):
         real = 'ok' if testOutputs[i] == 0 else 'fraud'
-        computed = 'ok' if lr.predict(testInputs[i].reshape(1, -1)) == [0] else 'fraud'
+        computed = 'ok' if predict(lr, testInputs[i]) == [0] else 'fraud'
         if computed == real:
             print("computed : " + str(computed) + "     real : " + real)
             if real == 'fraud':

@@ -1,8 +1,9 @@
 from sklearn.linear_model import LogisticRegression
-from utils.db_utils import read_from_db
-from utils.data_utils import normalization, split_data, balance_histogram, generate_frauds
-from utils.env_utils import get_db_info, get_regressor_file
-from utils.metrics_utils import get_confusion_matrix
+from utils.db import read_from_db
+from utils.data import normalization, split_data, balance_histogram, generate_frauds
+from utils.env import get_db_info
+from common.env import get_regressor_file
+from utils.metrics import get_confusion_matrix
 import pickle
 
 
@@ -13,8 +14,10 @@ def train_model(trainInputs, trainOutputs):
     # generate frauds
     finalTrainInputs, finalTrainOutputs = generate_frauds(trainInputs, trainOutputs)
 
-    print("After OverSampling, frauds: {}".format(sum(finalTrainOutputs[i] == 1 for i in range(len(finalTrainOutputs)))))
-    print("After OverSampling, normal: {} \n".format(sum(finalTrainOutputs[i] == 0 for i in range(len(finalTrainOutputs)))))
+    print(
+        "After OverSampling, frauds: {}".format(sum(finalTrainOutputs[i] == 1 for i in range(len(finalTrainOutputs)))))
+    print("After OverSampling, normal: {} \n".format(
+        sum(finalTrainOutputs[i] == 0 for i in range(len(finalTrainOutputs)))))
 
     # view data balance after oversampling
     balance_histogram(finalTrainOutputs)
@@ -63,7 +66,7 @@ def test_model(testInputs, testOutputs):
     print("f1 score: " + str(f1_score))
 
 
-def main():
+if __name__ == '__main__':
     # get db info from env file
     url, db_name, col_name = get_db_info()
     # read data from db
@@ -75,9 +78,5 @@ def main():
     # split data into train inputs and train outputs
     trainInputs, trainOutputs, testInputs, testOutputs = split_data(normalisedInputs, outputs)
 
-    # train_model(trainInputs, trainOutputs)
+    train_model(trainInputs, trainOutputs)
     test_model(testInputs, testOutputs)
-
-
-if __name__ == '__main__':
-    main()

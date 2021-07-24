@@ -5,7 +5,7 @@ from imblearn.over_sampling import SMOTE
 from matplotlib import pyplot as plt
 from sklearn.preprocessing import StandardScaler
 
-from utils.env_utils import get_scaler_file
+from common.env import get_scaler_file
 
 
 def generate_frauds(trainInputs, trainOutputs):
