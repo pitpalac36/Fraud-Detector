@@ -5,6 +5,8 @@ from imblearn.over_sampling import SMOTE
 from matplotlib import pyplot as plt
 from sklearn.preprocessing import StandardScaler
 
+from utils.env_utils import get_scaler_file
+
 
 def generate_frauds(trainInputs, trainOutputs):
     sm = SMOTE(random_state=2)
@@ -23,7 +25,8 @@ def normalization(data):
         scaler.fit(data)
         xNormalisedData = scaler.transform(data)
     # save scaler information to pickle file
-    with open('scaler_info.pickle', 'wb') as handle:
+    scaler_file = get_scaler_file()
+    with open(scaler_file, 'wb') as handle:
         pickle.dump(scaler, handle, protocol=pickle.HIGHEST_PROTOCOL)
     return xNormalisedData
 

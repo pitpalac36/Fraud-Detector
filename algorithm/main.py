@@ -1,6 +1,4 @@
-import os
 from sklearn.linear_model import LogisticRegression
-from dotenv import load_dotenv
 from utils.db_utils import read_from_db
 from utils.data_utils import normalization, split_data, balance_histogram, generate_frauds
 from utils.env_utils import get_db_info, get_regressor_file
@@ -26,7 +24,8 @@ def train_model(trainInputs, trainOutputs):
     lr.fit(finalTrainInputs, finalTrainOutputs)
 
     # save regressor information to pickle file
-    with open('lr_info.pickle', 'wb') as handle:
+    lr_file = get_regressor_file()
+    with open(lr_file, 'wb') as handle:
         pickle.dump(lr, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
@@ -76,7 +75,7 @@ def main():
     # split data into train inputs and train outputs
     trainInputs, trainOutputs, testInputs, testOutputs = split_data(normalisedInputs, outputs)
 
-    train_model(trainInputs, trainOutputs)
+    # train_model(trainInputs, trainOutputs)
     test_model(testInputs, testOutputs)
 
 
