@@ -13,9 +13,11 @@ async def hello(websocket, path):
     buffer = await websocket.recv()
     norm_dto = base64.b64decode(buffer)
     json_data = json.loads(norm_dto.decode('UTF-8'))
-    print(NormDTO(json_data['tran_id'], normalization(json_data['data'])))
-    base64.b64encode(pickle.dumps(NormDTO(json_data["tran_id"], normalization(json_data['data']))), buffer)
-    await websocket.send(bytes(buffer))
+    result = NormDTO(json_data['tran_id'], normalization(json_data['data']))
+    print(result)
+    bytes = pickle.dumps(result)
+    buffer = base64.b64encode(bytes)
+    await websocket.send(buffer)
 
 
 def main():

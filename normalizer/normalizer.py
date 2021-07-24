@@ -1,13 +1,15 @@
-from sklearn.preprocessing import StandardScaler
+import pickle
+
+from utils.env_utils import get_scaler_file
+from numpy import asarray
 
 
 def normalization(data):
-    scaler = StandardScaler()
+    scaler_file = get_scaler_file()
+    with open(scaler_file, 'rb') as handle:
+        scaler = pickle.load(handle)
     if not isinstance(data[0], list):
-        xData = [[d] for d in data]
-        scaler.fit(xData)
-        normalisedData = scaler.transform(xData)
-        xNormalisedData = [el[0] for el in normalisedData]
+        normalisedData = scaler.transform(asarray([data]))
     else:
-        xNormalisedData = scaler.fit_transform(data)
-    return xNormalisedData
+        normalisedData = scaler.transform(data)
+    return normalisedData[0].tolist()
