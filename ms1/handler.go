@@ -10,6 +10,9 @@ import (
 )
 
 var counter = 0
+const aiAddr = "localhost:8083"
+var ai_conn net.Conn = nil
+
 
 func handleConnection(conn net.Conn, wsConn *websocket.Conn) {
 	defer func() {
@@ -52,20 +55,36 @@ func sendOutput(output *Transaction, wsConn *websocket.Conn) error {
 }
 
 func receiveHandler(connection *websocket.Conn) {
-	normDTO := NormDTO{}
+	//normDTO := NormDTO{}
+	aiCounter := 0
 	for {
 		_, msg, err := connection.ReadMessage()
 		if err != nil {
 			log.Println(err.Error())
 			break
 		}
-		err = json.Unmarshal(msg, &normDTO)
-		if err != nil {
-			if err == io.EOF {
-				break
+		//err = json.Unmarshal(msg, &normDTO)
+		//if err != nil {
+		//	if err == io.EOF {
+		//		break
+		//	}
+		//	log.Fatal(err.Error())
+		//}
+		//fmt.Println(normDTO)
+
+		if ai_conn == nil {
+			fmt.Println("Creating new tcp connection to AI module")
+			ai_conn, err = net.Dial("tcp", aiAddr)
+			if err != nil {
+				log.Fatal(err.Error())
+				return
 			}
-			log.Fatal(err.Error())
 		}
-		fmt.Println(normDTO)
+		if _, err = ai_conn.Write(msg); err != nil {
+			log.Fatal(err.Error())
+			return
+		}
+		aiCounter++
+		fmt.Println(aiCounter)
 	}
 }
