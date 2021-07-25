@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gorilla/websocket"
 	"log"
 	"net"
@@ -21,15 +22,22 @@ func init() {
 	if err != nil {
 		log.Fatal("Error connecting to Websocket Server:", err)
 	}
-	go receiveHandler(wsConn)
 }
 
 func main() {
+	defer func() {
+		err := wsConn.Close()
+		fmt.Println("Closing web socket")
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+	}()
 	for {
 		conn, err := ln.Accept()
 		if err != nil {
 			log.Fatal(err.Error())
 		}
 		go handleConnection(conn, wsConn)
+		go receiveHandler(wsConn)
 	}
 }

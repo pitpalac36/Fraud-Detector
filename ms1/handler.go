@@ -12,6 +12,12 @@ import (
 var counter = 0
 
 func handleConnection(conn net.Conn, wsConn *websocket.Conn) {
+	defer func() {
+		err := conn.Close()
+		if err != nil {
+			return
+		}
+	}()
 	var output = &Transaction{}
 	var err error
 	decoder := json.NewDecoder(conn)
@@ -25,7 +31,7 @@ func handleConnection(conn net.Conn, wsConn *websocket.Conn) {
 			log.Fatal(err.Error())
 		}
 		counter++
-		//fmt.Println(output)
+		fmt.Println(counter)
 
 		if err = sendOutput(output, wsConn); err != nil {
 			log.Fatal(err.Error())
@@ -39,20 +45,27 @@ func sendOutput(output *Transaction, wsConn *websocket.Conn) error {
 	if err != nil {
 		return err
 	}
-	if err := wsConn.WriteJSON(bytes); err != nil {
+	if err = wsConn.WriteJSON(bytes); err != nil {
 		return err
 	}
 	return nil
 }
 
 func receiveHandler(connection *websocket.Conn) {
+	var normDTO NormDTO
 	for {
 		_, msg, err := connection.ReadMessage()
-		fmt.Println(msg)
 		if err != nil {
-			log.Fatal("Error in receive:", err.Error())
-			return
+			log.Println(err.Error())
+			break
 		}
-		log.Printf("Received: %s\n", msg)
+		err = json.Unmarshal(msg, &normDTO)
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			log.Fatal(err.Error())
+		}
+		//fmt.Println(normDTO)
 	}
 }
