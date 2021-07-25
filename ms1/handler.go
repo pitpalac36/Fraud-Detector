@@ -52,7 +52,7 @@ func sendOutput(output *Transaction, wsConn *websocket.Conn) error {
 }
 
 func receiveHandler(connection *websocket.Conn) {
-	var normDTO NormDTO
+	normDTO := NormDTO{}
 	for {
 		_, msg, err := connection.ReadMessage()
 		if err != nil {
@@ -66,6 +66,6 @@ func receiveHandler(connection *websocket.Conn) {
 			}
 			log.Fatal(err.Error())
 		}
-		//fmt.Println(normDTO)
+		fmt.Println(normDTO)
 	}
 }

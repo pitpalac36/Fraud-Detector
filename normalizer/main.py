@@ -11,14 +11,13 @@ from utils.env_utils import get_address_and_port, get_ws_url
 
 
 async def handler(websocket, path):
-    # time.sleep(10)
     counter = 0
     try:
         async for buffer in websocket:
             norm_dto = base64.b64decode(buffer)
             json_data = json.loads(norm_dto.decode('UTF-8'))
             result = NormDTO(json_data['tran_id'], normalization(json_data['data']))
-            # print(result.to_json())
+            print(result.to_json())
             await websocket.send(result.to_json())
             counter += 1
             print(counter)

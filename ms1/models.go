@@ -54,6 +54,10 @@ func (t Transaction) String() string {
 	return fmt.Sprintf("{ ID: %s, Timestamp: %s, TransactionData: %Tran }", t.ID, t.Timestamp, t.Tran)
 }
 
+func (normDTO NormDTO) String() string {
+	return fmt.Sprintf("{ TranID: %s, Data: %v }", normDTO.TranID, normDTO.Data)
+}
+
 func (t Transaction) TranToNorm() NormDTO {
 	values := reflect.ValueOf(t.Tran)
 	data := [29]float64{}
