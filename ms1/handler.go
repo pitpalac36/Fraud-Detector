@@ -63,14 +63,6 @@ func receiveHandler(connection *websocket.Conn) {
 			log.Println(err.Error())
 			break
 		}
-		//err = json.Unmarshal(msg, &normDTO)
-		//if err != nil {
-		//	if err == io.EOF {
-		//		break
-		//	}
-		//	log.Fatal(err.Error())
-		//}
-		//fmt.Println(normDTO)
 
 		if ai_conn == nil {
 			fmt.Println("Creating new tcp connection to AI module")
@@ -80,6 +72,7 @@ func receiveHandler(connection *websocket.Conn) {
 				return
 			}
 		}
+
 		if _, err = ai_conn.Write(msg); err != nil {
 			log.Fatal(err.Error())
 			return
