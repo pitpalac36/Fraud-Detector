@@ -1,13 +1,12 @@
 import asyncio
 import base64
-import time
+import json
 
 import websockets
-import json
 
 from models import NormDTO
 from normalizer import normalization
-from utils.env_utils import get_address_and_port, get_ws_url
+from utils.env_utils import get_address_and_port
 
 
 async def handler(websocket, path):
@@ -25,9 +24,10 @@ async def handler(websocket, path):
         print("error")
         return
 
+
 if __name__ == '__main__':
     address, port = get_address_and_port()
-    start_server = websockets.serve(handler, address, port)
     event_loop = asyncio.get_event_loop()
+    start_server = websockets.serve(handler, address, port)
     event_loop.run_until_complete(start_server)
     event_loop.run_forever()
