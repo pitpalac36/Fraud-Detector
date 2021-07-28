@@ -18,8 +18,8 @@ if __name__ == '__main__':
     recv_sock.listen(5)
     counter = 0
 
-    #send_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    #send_sock.connect(('localhost', 8084))
+    send_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    send_sock.connect(('localhost', 8084))
 
     while True:
         recv_conn, client_addr = recv_sock.accept()
@@ -34,8 +34,9 @@ if __name__ == '__main__':
                 result = predict2(lr, json_data['data'])[0]
                 result_dto = ResultDTO(json_data['tran_id'], True if result == 1 else False)
                 print(result_dto)
-                # send_sock.send(result.to_json())
+                result_bytes = bytes(result_dto.to_json(), encoding="UTF-8")
+                send_sock.send(result_bytes)
         finally:
             print("in finally")
             recv_conn.close()
-            #send_sock.close()
+            send_sock.close()
