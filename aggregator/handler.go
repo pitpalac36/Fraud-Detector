@@ -9,7 +9,6 @@ import (
 )
 
 const denormAddr = "ws://localhost:8085"
-
 var denormConn *websocket.Conn
 
 func socketHandler(w http.ResponseWriter, r *http.Request) {
@@ -25,6 +24,12 @@ func socketHandler(w http.ResponseWriter, r *http.Request) {
 			log.Fatal(err.Error())
 		}
 	}()
+	go func() {
+		err := handleDenormReceive()
+		if err != nil {
+
+		}
+	}();
 	for {
 		_, bytes, err := aiConn.ReadMessage()
 		if err != nil {
@@ -34,14 +39,14 @@ func socketHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Fatal(err.Error())
 		}
-		err = handleAiData(&predDTO)
+		err = handleAiReceive(&predDTO)
 		if err != nil {
-			return
+			log.Fatal(err.Error())
 		}
 	}
 }
 
-func handleAiData(predDTO *PredictionDTO) error {
+func handleAiReceive(predDTO *PredictionDTO) error {
 	var err error
 	denormDTO := DenormDTO{}
 	if denormConn == nil {
@@ -52,7 +57,6 @@ func handleAiData(predDTO *PredictionDTO) error {
 	}
 	denormDTO.TranID = predDTO.TranID
 	denormDTO.Data = predDTO.Data
-	fmt.Println(denormDTO)
 	bytes, err := json.Marshal(denormDTO)
 	if err != nil {
 		return err
@@ -61,4 +65,29 @@ func handleAiData(predDTO *PredictionDTO) error {
 		return err
 	}
 	return nil
+}
+
+func handleDenormReceive() error {
+	denormDTO := DenormDTO{}
+	counter := 0
+	var err error
+	for {
+		if denormConn == nil {
+			denormConn, _, err = websocket.DefaultDialer.Dial(denormAddr, nil)
+			if err != nil {
+				return err
+			}
+		}
+		_, bytes, err := denormConn.ReadMessage()
+		if err != nil {
+			return err
+		}
+		err = json.Unmarshal(bytes, &denormDTO)
+		if err != nil {
+			return err
+		}
+		counter++
+		fmt.Println(counter)
+		fmt.Println(denormDTO)
+	}
 }

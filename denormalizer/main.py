@@ -21,7 +21,7 @@ async def handler(websocket, path):
             json_data = json.loads(norm_dto.decode('UTF-8'))
             result = DenormDTO(json_data['tran_id'], denormalization(scaler, json_data['data']))
             print(result.to_json())
-            # await websocket.send(result.to_json())
+            await websocket.send(result.to_json())
             counter += 1
             print(counter)
     except websockets.exceptions.ConnectionClosedError:
