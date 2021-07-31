@@ -56,8 +56,6 @@ func sendOutput(output *Transaction, wsConn *websocket.Conn) error {
 }
 
 func receiveHandler(connection *websocket.Conn) {
-	//normDTO := NormDTO{}
-	//aiCounter := 0
 	for {
 		_, msg, err := connection.ReadMessage()
 		if err != nil {
