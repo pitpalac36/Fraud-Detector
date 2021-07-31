@@ -6,4 +6,5 @@ from dataclasses_json import dataclass_json
 @dataclass
 class ResultDTO:
     tran_id: str
+    data: list
     is_fraud: bool

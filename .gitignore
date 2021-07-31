@@ -230,3 +230,6 @@ cython_debug/
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
+/algorithm/.idea/
+/denormalizer/.idea/
+/normalizer/.idea/
