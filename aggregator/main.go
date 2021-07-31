@@ -1,17 +1,14 @@
 package main
 
-/* TODO: wait for data from AI 		(tcp)
-   TODO: send data to denormalizer  (ws)
-   TODO: wait for denormalized data (ws)
-   TODO: aggregate data
-   TODO: send data to dashboard
-*/
-
 import (
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
 )
+/*
+   TODO: wait for denormalized data (ws)
+   TODO: send data to dashboard
+*/
 
 var upgrader = websocket.Upgrader{}
 

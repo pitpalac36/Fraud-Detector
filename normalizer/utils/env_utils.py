@@ -11,8 +11,3 @@ def get_scaler_file():
 def get_address_and_port():
     load_dotenv()
     return str(os.getenv('ADDRESS')), str(os.getenv('PORT'))
-
-
-def get_ws_url():
-    load_dotenv()
-    return str(os.getenv("WS_URL"))
