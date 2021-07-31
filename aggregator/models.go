@@ -5,20 +5,20 @@ import (
 )
 
 type PredictionDTO struct {
-	TranID  string    `json:"tran_id"`
+	TranID  string      `json:"tran_id"`
 	Data    [29]float64 `json:"data"`
-	IsFraud bool      `json:"is_fraud"`
+	IsFraud bool        `json:"is_fraud"`
+}
+
+func (p PredictionDTO) String() string {
+	return fmt.Sprintf("{ TranID: %s, Data: %v, IsFraud: %t }", p.TranID, p.Data, p.IsFraud)
 }
 
 type DenormDTO struct {
-	TranID  string    `json:"tran_id"`
-	Data    [29]float64 `json:"data"`
+	TranID string      `json:"tran_id"`
+	Data   [29]float64 `json:"data"`
 }
 
-func (predictionDTO PredictionDTO) String() string {
-	return fmt.Sprintf("{ TranID: %s, Data: %v, IsFraud: %t }", predictionDTO.TranID, predictionDTO.Data, predictionDTO.IsFraud)
-}
-
-func (denormDTO DenormDTO) String() string {
-	return fmt.Sprintf("{ TranID: %s, Data: %v}", denormDTO.TranID, denormDTO.Data)
+func (d DenormDTO) String() string {
+	return fmt.Sprintf("{ TranID: %s, Data: %v}", d.TranID, d.Data)
 }

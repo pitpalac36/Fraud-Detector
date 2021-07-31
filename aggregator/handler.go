@@ -9,9 +9,15 @@ import (
 )
 
 const denormAddr = "ws://localhost:8085"
+
 var denormConn *websocket.Conn
 
-func socketHandler(w http.ResponseWriter, r *http.Request) {
+type AIHandler struct {
+	aiConn        *websocket.Conn
+	denormHandler *DenormHandler
+}
+
+func (h *AIHandler) handle(w http.ResponseWriter, r *http.Request) {
 	aiConn, err := upgrader.Upgrade(w, r, nil)
 	predDTO := PredictionDTO{}
 	if err != nil {
@@ -25,11 +31,11 @@ func socketHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 	go func() {
-		err := handleDenormReceive()
+		err := h.denormHandler.handleDenormReceive()
 		if err != nil {
-
+			log.Fatal(err.Error())
 		}
-	}();
+	}()
 	for {
 		_, bytes, err := aiConn.ReadMessage()
 		if err != nil {
@@ -39,14 +45,14 @@ func socketHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Fatal(err.Error())
 		}
-		err = handleAiReceive(&predDTO)
+		err = h.handleAiReceive(&predDTO)
 		if err != nil {
 			log.Fatal(err.Error())
 		}
 	}
 }
 
-func handleAiReceive(predDTO *PredictionDTO) error {
+func (h *AIHandler) handleAiReceive(predDTO *PredictionDTO) error {
 	var err error
 	denormDTO := DenormDTO{}
 	if denormConn == nil {
@@ -54,6 +60,10 @@ func handleAiReceive(predDTO *PredictionDTO) error {
 		if err != nil {
 			return err
 		}
+	}
+	err = h.denormHandler.cache.Set(predDTO)
+	if err != nil {
+		return err
 	}
 	denormDTO.TranID = predDTO.TranID
 	denormDTO.Data = predDTO.Data
@@ -67,7 +77,12 @@ func handleAiReceive(predDTO *PredictionDTO) error {
 	return nil
 }
 
-func handleDenormReceive() error {
+type DenormHandler struct {
+	denormConn *websocket.Conn
+	cache      *Cache
+}
+
+func (d *DenormHandler) handleDenormReceive() error {
 	denormDTO := DenormDTO{}
 	counter := 0
 	var err error
@@ -87,7 +102,13 @@ func handleDenormReceive() error {
 			return err
 		}
 		counter++
-		fmt.Println(counter)
-		fmt.Println(denormDTO)
-	}
+		predDTO, err := d.cache.Get(denormDTO.TranID)
+		if err != nil {
+			return err
+		}
+		fmt.Println(predDTO)
+		}
+
+		// send preDTO to react
+
 }
