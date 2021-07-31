@@ -1,9 +1,10 @@
 from dataclasses import dataclass
+
 from dataclasses_json import dataclass_json
 
 
 @dataclass_json
 @dataclass
-class ResultDTO:
+class DenormDTO:
     tran_id: str
-    is_fraud: bool
+    data: list

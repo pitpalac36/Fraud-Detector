@@ -53,9 +53,9 @@ func main() {
 	}
 
 	var wg sync.WaitGroup
-	wg.Add(10000)
+	wg.Add(100000)
 
-	for i := 0; i < 10000; i++ {
+	for i := 0; i < 100000; i++ {
 		go func() {
 			err = encoder.Encode(res)
 			if err != nil {
@@ -66,16 +66,6 @@ func main() {
 	}
 
 	wg.Wait()
-
-	//for crs.Next(ctx) {
-	//	var res Value
-	//	if err := crs.Decode(&res); err != nil {
-	//		log.Fatal(err.Error())
-	//	}
-	//	go func() {
-	//		err = encoder.Encode(res)
-	//	}()
-	//}
 
 	if err = crs.Err(); err != nil {
 		log.Fatal(err.Error())

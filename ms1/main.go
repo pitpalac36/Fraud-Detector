@@ -27,7 +27,7 @@ func init() {
 func main() {
 	defer func() {
 		err := wsConn.Close()
-		fmt.Println("Closing web socket")
+		fmt.Println("Closing normalizer web socket")
 		if err != nil {
 			log.Fatal(err.Error())
 		}

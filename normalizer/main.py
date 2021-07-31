@@ -20,7 +20,7 @@ async def handler(websocket, path):
             await websocket.send(result.to_json())
             counter += 1
             print(counter)
-    except asyncio.exceptions.CancelledError:
+    except websockets.exceptions.ConnectionClosedError:
         print("error")
         return
 
@@ -28,6 +28,6 @@ async def handler(websocket, path):
 if __name__ == '__main__':
     address, port = get_address_and_port()
     event_loop = asyncio.get_event_loop()
-    start_server = websockets.serve(handler, address, port)
+    start_server = websockets.serve(handler, address, port, ping_interval=None)
     event_loop.run_until_complete(start_server)
     event_loop.run_forever()

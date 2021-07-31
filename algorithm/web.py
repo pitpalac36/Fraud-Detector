@@ -1,42 +1,38 @@
+import asyncio
+import base64
 import json
 import pickle
-import socket
+import websockets
 
 from common.env import get_regressor_file
 from common.prediction import predict2
 from utils.models import ResultDTO
 
-if __name__ == '__main__':
+
+async def handler(websocket, path):
+    counter = 0
     lr_file = get_regressor_file()
     with open(lr_file, 'rb') as handle:
         lr = pickle.load(handle)
+    try:
+        async for buffer in websocket:
+            norm_dto = base64.b64decode(buffer)
+            json_data = json.loads(norm_dto.decode('UTF-8'))
+            result = predict2(lr, json_data['data'])[0]
+            result_dto = ResultDTO(json_data['tran_id'], True if result == 1 else False)
+            print(result_dto)
+            await websocket.send(result_dto.to_json())
+            counter += 1
+            print(counter)
+    except websockets.exceptions.ConnectionClosedError:
+        print("error")
+        return
 
-    recv_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_address = ('localhost', 8083)
-    print('Starting up on port 8083')
-    recv_sock.bind(server_address)
-    recv_sock.listen(5)
-    counter = 0
 
-    send_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    send_sock.connect(('localhost', 8084))
-
-    while True:
-        recv_conn, client_addr = recv_sock.accept()
-        print('connection from', str(client_addr))
-        try:
-            while True:
-                json_data = json.loads(recv_conn.recv(642).decode('UTF-8'))
-                print(json_data)
-                if not json_data:
-                    break
-                counter += 1
-                result = predict2(lr, json_data['data'])[0]
-                result_dto = ResultDTO(json_data['tran_id'], True if result == 1 else False)
-                print(result_dto)
-                result_bytes = bytes(result_dto.to_json(), encoding="UTF-8")
-                send_sock.send(result_bytes)
-        finally:
-            print("in finally")
-            recv_conn.close()
-            send_sock.close()
+if __name__ == '__main__':
+    address = 'localhost'
+    port = 8083
+    event_loop = asyncio.get_event_loop()
+    start_server = websockets.serve(handler, address, port, ping_interval=None)
+    event_loop.run_until_complete(start_server)
+    event_loop.run_forever()

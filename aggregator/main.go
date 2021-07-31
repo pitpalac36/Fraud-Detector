@@ -9,27 +9,51 @@ package main
 
 import (
 	"fmt"
+	"github.com/gorilla/websocket"
 	"log"
-	"net"
+	"net/http"
 )
-
-var ln net.Listener
+var receiveAiConn *websocket.Conn
+var upgrader = websocket.Upgrader{}
 
 func init() {
 	var err error
-	ln, err = net.Listen("tcp", ":8084")
+	// client (wait from denormalizer)
+	receiveAiUrl := "ws://localhost:8083"
+	receiveAiConn, _, err = websocket.DefaultDialer.Dial(receiveAiUrl, nil)
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Fatal("Error connecting to Websocket Server:", err)
 	}
 }
 
 func main() {
-	fmt.Println("I'm in")
-	for {
-		conn, err := ln.Accept()
+	http.HandleFunc("/socket", socketHandler)
+	defer func() {
+		err := receiveAiConn.Close()
+		fmt.Println("Closing ai receive web socket")
 		if err != nil {
 			log.Fatal(err.Error())
 		}
-		go handleConnection(conn)
+	}()
+	for {
+		_, msg, err := receiveAiConn.ReadMessage()
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+		go receiveHandler(msg)
 	}
+}
+
+func socketHandler(w http.ResponseWriter, r *http.Request) {
+	aiSendConn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Print("Error during connection upgradation:", err)
+		return
+	}
+	defer func(aiConn *websocket.Conn) {
+		err := aiConn.Close()
+		if err != nil {
+
+		}
+	}(aiSendConn)
 }
