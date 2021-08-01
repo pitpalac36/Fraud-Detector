@@ -24,10 +24,12 @@ func main() {
 		}),
 		Context: context.Background(),
 	}
+
 	dh := &DenormHandler{
 		denormConn: nil,
 		cache:      ch,
 	}
+
 	aiHandler := AIHandler{
 		aiConn:        nil,
 		denormHandler: dh,

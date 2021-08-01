@@ -83,6 +83,7 @@ type DenormHandler struct {
 	cache      *Cache
 }
 
+
 func (d *DenormHandler) handleDenormReceive() error {
 	denormDTO := DenormDTO{}
 	predDTO := &PredictionDTO{}
@@ -112,5 +113,6 @@ func (d *DenormHandler) handleDenormReceive() error {
 		fmt.Println(counter)
 		fmt.Println(predDTO)
 	}
-		// send preDTO to react
+	// send preDTO to react
+
 }
