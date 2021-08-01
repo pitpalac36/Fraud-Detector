@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
@@ -102,11 +101,10 @@ func (d *DenormHandler) handleDenormReceive() error {
 			return err
 		}
 		counter++
-		predDTO, err := d.cache.Get(denormDTO.TranID)
+		_, err = d.cache.Get(denormDTO.TranID)
 		if err != nil {
 			return err
 		}
-		fmt.Println(predDTO)
 		}
 
 		// send preDTO to react

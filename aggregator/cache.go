@@ -13,6 +13,7 @@ type Cache struct {
 }
 
 func (c *Cache) Get(key string) (res *PredictionDTO, err error) {
+	res = &PredictionDTO{}
 	b, err := c.Client.Get(c.Context, key).Result()
 	fmt.Println(b)
 	if err != nil {
@@ -22,6 +23,7 @@ func (c *Cache) Get(key string) (res *PredictionDTO, err error) {
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println(res);
 	return res, nil
 }
 

@@ -32,6 +32,7 @@ func main() {
 		aiConn:        nil,
 		denormHandler: dh,
 	}
+	
 	http.HandleFunc("/", aiHandler.handle)
 	if err := http.ListenAndServe("localhost:8084", nil); err != nil {
 		log.Fatal(err.Error())
