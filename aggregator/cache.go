@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/go-redis/redis/v8"
 )
 
@@ -15,15 +14,16 @@ type Cache struct {
 func (c *Cache) Get(key string) (res *PredictionDTO, err error) {
 	res = &PredictionDTO{}
 	b, err := c.Client.Get(c.Context, key).Result()
-	fmt.Println(b)
 	if err != nil {
 		return nil, err
+	}
+	if b != ""{
+		c.Client.Del(c.Context, key)
 	}
 	err = json.Unmarshal([]byte(b), res)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(res);
 	return res, nil
 }
 

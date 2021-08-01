@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
@@ -61,6 +62,7 @@ func (h *AIHandler) handleAiReceive(predDTO *PredictionDTO) error {
 		}
 	}
 	err = h.denormHandler.cache.Set(predDTO)
+	fmt.Println(h.denormHandler.cache.Client.DBSize(h.denormHandler.cache.Context).String())
 	if err != nil {
 		return err
 	}
@@ -83,6 +85,7 @@ type DenormHandler struct {
 
 func (d *DenormHandler) handleDenormReceive() error {
 	denormDTO := DenormDTO{}
+	predDTO := &PredictionDTO{}
 	counter := 0
 	var err error
 	for {
@@ -100,13 +103,14 @@ func (d *DenormHandler) handleDenormReceive() error {
 		if err != nil {
 			return err
 		}
-		counter++
-		_, err = d.cache.Get(denormDTO.TranID)
+		predDTO, err = d.cache.Get(denormDTO.TranID)
 		if err != nil {
 			return err
 		}
-		}
-
+		predDTO.Data = denormDTO.Data
+		counter++
+		fmt.Println(counter)
+		fmt.Println(predDTO)
+	}
 		// send preDTO to react
-
 }
