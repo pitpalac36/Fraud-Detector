@@ -24,11 +24,11 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	uri := os.Getenv("MONGO_URI")
+	mongoUri := os.Getenv("MONGO_URI")
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoUri))
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -39,23 +39,23 @@ func main() {
 		}
 	}()
 
-	sock, err := net.Dial("tcp", "localhost:8080")
+	sock, err := net.Dial("tcp", os.Getenv("LOAD_TEST_ADDR"))
 	encoder := json.NewEncoder(sock)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	crs, err := client.Database("creditcards").Collection("values").Find(ctx, bson.D{})
-
-	crs.Next(ctx)
-	var res Value
-	if err = crs.Decode(&res); err != nil {
-		log.Fatal(err.Error())
-	}
+	collection := client.Database("creditcards").Collection("values")
+	crs, err := collection.Find(ctx, bson.D{})
+	itemCount, err := collection.CountDocuments(ctx, bson.D{})
 
 	var wg sync.WaitGroup
-	wg.Add(30000)
+	wg.Add(int(itemCount))
 
-	for i := 0; i < 30000; i++ {
+	for crs.Next(ctx) {
+		var res Value
+		if err := crs.Decode(&res); err != nil {
+			log.Fatal(err.Error())
+		}
 		go func() {
 			err = encoder.Encode(res)
 			if err != nil {
@@ -64,9 +64,7 @@ func main() {
 			wg.Done()
 		}()
 	}
-
 	wg.Wait()
-
 	if err = crs.Err(); err != nil {
 		log.Fatal(err.Error())
 	}

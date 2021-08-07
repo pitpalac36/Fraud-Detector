@@ -1,15 +1,22 @@
 package main
 
 import (
+	"github.com/joho/godotenv"
 	"log"
 	"net"
+	"os"
 )
 
 var ln net.Listener
 
 func init() {
 	var err error
-	ln, err = net.Listen("tcp", ":8080")
+	err = godotenv.Load(".env")
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	ln, err = net.Listen("tcp", os.Getenv("GATEWAY_ADDR"))
 	if err != nil {
 		log.Fatal(err.Error())
 	}

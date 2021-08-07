@@ -7,24 +7,23 @@ import (
 	"io"
 	"log"
 	"net"
+	"os"
 )
 
 var counter = 0
-const aiAddr = "ws://localhost:8083"
+var aiAddr string
 var aiConn *websocket.Conn
 
-
-
-func handleConnection(conn net.Conn, wsConn *websocket.Conn) {
+func handleConnection(gatewayConn net.Conn, normConn *websocket.Conn) {
 	defer func() {
-		err := conn.Close()
+		err := gatewayConn.Close()
 		if err != nil {
 			return
 		}
 	}()
 	var output = &Transaction{}
 	var err error
-	decoder := json.NewDecoder(conn)
+	decoder := json.NewDecoder(gatewayConn)
 
 	for {
 		err = decoder.Decode(output)
@@ -34,7 +33,7 @@ func handleConnection(conn net.Conn, wsConn *websocket.Conn) {
 			}
 			log.Fatal(err.Error())
 		}
-		if err = sendOutput(output, wsConn); err != nil {
+		if err = sendOutput(output, normConn); err != nil {
 			log.Fatal(err.Error())
 		} else {
 			counter++
@@ -55,9 +54,10 @@ func sendOutput(output *Transaction, wsConn *websocket.Conn) error {
 	return nil
 }
 
-func receiveHandler(connection *websocket.Conn) {
+func receiveHandler(normConn *websocket.Conn) {
+	aiAddr = os.Getenv("AI_URL")
 	for {
-		_, msg, err := connection.ReadMessage()
+		_, msg, err := normConn.ReadMessage()
 		if err != nil {
 			log.Println(err.Error())
 			break

@@ -3,22 +3,28 @@ package main
 import (
 	"fmt"
 	"github.com/gorilla/websocket"
+	"github.com/joho/godotenv"
 	"log"
 	"net"
+	"os"
 )
 
 var ln net.Listener
-var wsConn *websocket.Conn
+var normConn *websocket.Conn
 
 func init() {
 	var err error
-	ln, err = net.Listen("tcp", ":8081")
+	err = godotenv.Load(".env")
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	ln, err = net.Listen("tcp", os.Getenv("PROCESSOR_ADDR"))
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	socketUrl := "ws://localhost:8082"
-	wsConn, _, err = websocket.DefaultDialer.Dial(socketUrl, nil)
+	normConn, _, err = websocket.DefaultDialer.Dial(os.Getenv("NORM_URL"), nil)
 	if err != nil {
 		log.Fatal("Error connecting to Websocket Server:", err)
 	}
@@ -26,18 +32,18 @@ func init() {
 
 func main() {
 	defer func() {
-		err := wsConn.Close()
+		err := normConn.Close()
 		fmt.Println("Closing normalizer web socket")
 		if err != nil {
 			log.Fatal(err.Error())
 		}
 	}()
 	for {
-		conn, err := ln.Accept()
+		gatewayConn, err := ln.Accept()
 		if err != nil {
 			log.Fatal(err.Error())
 		}
-		go handleConnection(conn, wsConn)
-		go receiveHandler(wsConn)
+		go handleConnection(gatewayConn, normConn)
+		go receiveHandler(normConn)
 	}
 }

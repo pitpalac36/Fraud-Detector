@@ -17,7 +17,7 @@ func (c *Cache) Get(key string) (res *PredictionDTO, err error) {
 	if err != nil {
 		return nil, err
 	}
-	if b != ""{
+	if b != "" {
 		c.Client.Del(c.Context, key)
 	}
 	err = json.Unmarshal([]byte(b), res)

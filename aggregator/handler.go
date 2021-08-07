@@ -6,9 +6,10 @@ import (
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
+	"os"
 )
 
-const denormAddr = "ws://localhost:8085"
+var denormAddr string
 
 var denormConn *websocket.Conn
 
@@ -18,6 +19,7 @@ type AIHandler struct {
 }
 
 func (h *AIHandler) handle(w http.ResponseWriter, r *http.Request) {
+	denormAddr = os.Getenv("DENORM_URL")
 	aiConn, err := upgrader.Upgrade(w, r, nil)
 	predDTO := PredictionDTO{}
 	if err != nil {
@@ -83,7 +85,6 @@ type DenormHandler struct {
 	cache      *Cache
 }
 
-
 func (d *DenormHandler) handleDenormReceive() error {
 	denormDTO := DenormDTO{}
 	predDTO := &PredictionDTO{}
@@ -111,7 +112,9 @@ func (d *DenormHandler) handleDenormReceive() error {
 		predDTO.Data = denormDTO.Data
 		counter++
 		fmt.Println(counter)
-		fmt.Println(predDTO)
+		if predDTO.IsFraud {
+			fmt.Println(predDTO)
+		}
 	}
 	// send preDTO to react
 

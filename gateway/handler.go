@@ -7,22 +7,23 @@ import (
 	"io"
 	"log"
 	"net"
+	"os"
 	"strconv"
 	"time"
 )
 
-const ms1Addr = "localhost:8081"
-var ms1_conn net.Conn = nil
+var processorAddr = os.Getenv("PROCESSOR_ADDR")
+var procConn net.Conn = nil
 
-func handleConnection(conn net.Conn) {
+func handleConnection(loadConn net.Conn) {
 	counter := 0
 	var tran = &TransactionData{}
 	var err error
-	decoder := json.NewDecoder(conn)
+	decoder := json.NewDecoder(loadConn)
 	for {
 		err = decoder.Decode(tran)
 		if err != nil {
-			if err == io.ErrUnexpectedEOF || err == io.EOF{
+			if err == io.ErrUnexpectedEOF || err == io.EOF {
 				break
 			}
 			log.Fatal(err.Error())
@@ -30,8 +31,8 @@ func handleConnection(conn net.Conn) {
 		counter++
 		fmt.Println(counter)
 		timestamp := time.Now()
-		output := Transaction {
-			ID:        encodeAddr(conn.RemoteAddr(), timestamp),
+		output := Transaction{
+			ID:        encodeAddr(loadConn.RemoteAddr(), timestamp),
 			Timestamp: timestamp,
 			Tran:      *tran,
 		}
@@ -45,23 +46,14 @@ func encodeAddr(addr net.Addr, timestamp time.Time) string {
 	return base64.StdEncoding.EncodeToString([]byte(addr.String() + "@" + strconv.FormatInt(timestamp.UnixNano(), 10)))
 }
 
-func decodeAddr(code string) (addr []byte, err error) {
-	addr, err = base64.StdEncoding.DecodeString(code)
-	if err != nil {
-		return nil, err
-	}
-	return addr, nil
-}
-
 func sendOutput(output *Transaction) error {
-	counter := 0
-	addr, err := decodeAddr(output.ID)
-	if err != nil {
-		log.Fatal(err.Error())
+	var err error
+	if processorAddr == "" {
+		processorAddr = os.Getenv("PROCESSOR_ADDR")
 	}
-	fmt.Println(string(addr))
-	if ms1_conn == nil {
-		ms1_conn, err = net.Dial("tcp", ms1Addr)
+	counter := 0
+	if procConn == nil {
+		procConn, err = net.Dial("tcp", processorAddr)
 		if err != nil {
 			return err
 		}
@@ -70,7 +62,7 @@ func sendOutput(output *Transaction) error {
 	if err != nil {
 		return err
 	}
-	if _, err = ms1_conn.Write(b); err != nil {
+	if _, err = procConn.Write(b); err != nil {
 		return err
 	}
 	counter++
