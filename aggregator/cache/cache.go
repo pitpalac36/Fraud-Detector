@@ -1,9 +1,10 @@
-package main
+package cache
 
 import (
 	"context"
 	"encoding/json"
 	"github.com/go-redis/redis/v8"
+	"github.com/pitpalac36/Fraud-Detector/aggregator/models"
 )
 
 type Cache struct {
@@ -11,8 +12,8 @@ type Cache struct {
 	Context context.Context
 }
 
-func (c *Cache) Get(key string) (res *PredictionDTO, err error) {
-	res = &PredictionDTO{}
+func (c *Cache) Get(key string) (res *models.Prediction, err error) {
+	res = &models.Prediction{}
 	b, err := c.Client.Get(c.Context, key).Result()
 	if err != nil {
 		return nil, err
@@ -27,7 +28,7 @@ func (c *Cache) Get(key string) (res *PredictionDTO, err error) {
 	return res, nil
 }
 
-func (c *Cache) Set(val *PredictionDTO) error {
+func (c *Cache) Set(val *models.Prediction) error {
 	key := val.TranID
 	b, err := json.Marshal(*val)
 	if err != nil {

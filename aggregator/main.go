@@ -2,15 +2,17 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"github.com/go-redis/redis/v8"
-	"github.com/gorilla/websocket"
 	"github.com/joho/godotenv"
+	"github.com/pitpalac36/Fraud-Detector/aggregator/cache"
+	"github.com/pitpalac36/Fraud-Detector/aggregator/clients"
+	"github.com/pitpalac36/Fraud-Detector/aggregator/handlers"
+	"github.com/pitpalac36/Fraud-Detector/aggregator/models"
 	"log"
 	"net/http"
 	"os"
 )
-
-var upgrader = websocket.Upgrader{}
 
 func main() {
 	err := godotenv.Load(".env")
@@ -18,7 +20,7 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	ch := &Cache{
+	ch := &cache.Cache{
 		Client: redis.NewClient(&redis.Options{
 			Addr:     os.Getenv("REDIS_ADDR"),
 			Username: "",
@@ -28,17 +30,29 @@ func main() {
 		Context: context.Background(),
 	}
 
-	dh := &DenormHandler{
-		denormConn: nil,
-		cache:      ch,
+	predChan := make(chan models.Prediction, 100)
+
+	dh := &clients.DenormHandler{
+		DenormConn:    nil,
+		Cache:         ch,
+		PredictionChan: &predChan,
 	}
 
-	aiHandler := AIHandler{
-		aiConn:        nil,
-		denormHandler: dh,
+	ah := &handlers.AIHandler{
+		AiConn:        nil,
+		DenormHandler: dh,
 	}
 
-	http.HandleFunc("/", aiHandler.handle)
+	uh := &handlers.UIHandler{
+		Conn:           nil,
+		PredictionChan: &predChan,
+	}
+
+	fmt.Println(dh.PredictionChan)
+	fmt.Println(uh.PredictionChan)
+
+	http.HandleFunc("/", ah.Handle)
+	http.HandleFunc("/results", uh.Handle)
 	addr := os.Getenv("AGGREGATOR_ADDR")
 	if err := http.ListenAndServe(addr, nil); err != nil {
 		log.Fatal(err.Error())
