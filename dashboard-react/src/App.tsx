@@ -1,8 +1,10 @@
 import React from 'react';
 import './App.css';
-import Transaction, {jsonToTransaction} from "./Transaction";
+import Transaction, {processData} from "./Transaction";
 import headers from "./headers";
 import { Table } from 'antd';
+
+
 
 export class App extends React.Component<{}, { endpoint: string, transactions: Transaction[], columns:any }> {
     constructor(props: any) {
@@ -19,15 +21,25 @@ export class App extends React.Component<{}, { endpoint: string, transactions: T
         ws.onopen = () => {
         }
         ws.onmessage = e => {
-            console.log(e.data)
+            console.log(JSON.parse(e.data))
             this.setState({
-                transactions: this.state.transactions.concat(jsonToTransaction(e.data))
+                transactions: this.state.transactions.concat(processData(JSON.parse(e.data)))
             })
         }
     }
 
+    itemRender(current: any, type: string, originalElement: any) {
+        if (type === 'prev') {
+            return <a>Previous</a>;
+        }
+        if (type === 'next') {
+            return <a>Next</a>;
+        }
+        return originalElement;
+    }
+
     render(){
         return(
-            <Table dataSource={this.state.transactions} columns={this.state.columns}/>
+            <Table dataSource={this.state.transactions} columns={this.state.columns} pagination={{itemRender: this.itemRender, pageSize: 50, style="padding: 24px"}}/>
         )}
 }
