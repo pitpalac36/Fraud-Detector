@@ -2,6 +2,7 @@ package clients
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/websocket"
 	cache2 "github.com/pitpalac36/Fraud-Detector/aggregator/cache"
 	"github.com/pitpalac36/Fraud-Detector/aggregator/models"
@@ -39,11 +40,10 @@ func (d *DenormHandler) HandleDenormReceive() error {
 			return err
 		}
 		prediction.Data = denormDTO.Data
-		counter++
-		//fmt.Println(counter)
 		if prediction.IsFraud {
+			counter++
+			fmt.Println(counter)
 			d.PredictionChan <- *prediction
-			//fmt.Println(<-*d.PredictionChan)
 		}
 	}
 }
