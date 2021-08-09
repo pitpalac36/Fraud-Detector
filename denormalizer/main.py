@@ -25,7 +25,7 @@ async def handler(websocket, path):
             counter += 1
             print(counter)
     except websockets.exceptions.ConnectionClosedError:
-        print("error")
+        print("Connection closed error")
         return
 
 
