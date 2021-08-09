@@ -15,7 +15,6 @@ func (p Prediction) String() string {
 func (p Prediction) ToResponse() *Response {
 	return &Response{
 		Source:    p.TranID,
-		Timestamp: p.TranID,
 		Amount:    p.Data[28],
 		V1:        p.Data[0],
 		V2:        p.Data[1],

@@ -11,7 +11,7 @@ import (
 type DenormHandler struct {
 	DenormConn     *websocket.Conn
 	Cache          *cache2.Cache
-	PredictionChan *chan models.Prediction
+	PredictionChan chan models.Prediction
 }
 
 func (d *DenormHandler) HandleDenormReceive() error {
@@ -42,9 +42,8 @@ func (d *DenormHandler) HandleDenormReceive() error {
 		counter++
 		//fmt.Println(counter)
 		if prediction.IsFraud {
-			//fmt.Println("Added to chan")
-			//fmt.Println(*prediction)
-			*d.PredictionChan <- *prediction
+			d.PredictionChan <- *prediction
+			//fmt.Println(<-*d.PredictionChan)
 		}
 	}
 }

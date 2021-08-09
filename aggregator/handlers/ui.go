@@ -10,13 +10,17 @@ import (
 
 type UIHandler struct {
 	Conn           *websocket.Conn
-	PredictionChan *chan models.Prediction
+	PredictionChan chan models.Prediction
 }
 
 func (h *UIHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	u := websocket.Upgrader{}
+	u.CheckOrigin = func(r *http.Request) bool { return true }
 	var err error
 	h.Conn, err = u.Upgrade(w, r, nil)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 
 	defer func() {
 		err = h.Conn.Close()
@@ -24,10 +28,17 @@ func (h *UIHandler) Handle(w http.ResponseWriter, r *http.Request) {
 			log.Fatal(err.Error())
 		}
 	}()
+
+	fmt.Println("hey")
+	var res models.Prediction
 	for {
-		fmt.Println(<-*h.PredictionChan)
-		//if err = h.Conn.WriteJSON(res.ToResponse()); err != nil {
-		//	log.Fatal(err)
-		//}
+		select {
+			case res = <- h.PredictionChan:
+				fmt.Println(*res.ToResponse())
+				if err = h.Conn.WriteJSON(res.ToResponse()); err != nil {
+					log.Fatal(err)
+				}
+		}
+
 	}
 }

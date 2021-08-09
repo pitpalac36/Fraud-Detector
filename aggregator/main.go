@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"github.com/go-redis/redis/v8"
 	"github.com/joho/godotenv"
 	"github.com/pitpalac36/Fraud-Detector/aggregator/cache"
@@ -30,12 +29,12 @@ func main() {
 		Context: context.Background(),
 	}
 
-	predChan := make(chan models.Prediction, 100)
+	predChan := make(chan models.Prediction, 1000)
 
 	dh := &clients.DenormHandler{
 		DenormConn:    nil,
 		Cache:         ch,
-		PredictionChan: &predChan,
+		PredictionChan: predChan,
 	}
 
 	ah := &handlers.AIHandler{
@@ -45,11 +44,8 @@ func main() {
 
 	uh := &handlers.UIHandler{
 		Conn:           nil,
-		PredictionChan: &predChan,
+		PredictionChan: predChan,
 	}
-
-	fmt.Println(dh.PredictionChan)
-	fmt.Println(uh.PredictionChan)
 
 	http.HandleFunc("/", ah.Handle)
 	http.HandleFunc("/results", uh.Handle)

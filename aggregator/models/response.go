@@ -2,7 +2,6 @@ package models
 
 type Response struct {
 	Source    string  `json:"source"`
-	Timestamp string  `json:"timestamp"`
 	Amount    float64 `json:"amount"`
 	V1        float64 `json:"v1"`
 	V2        float64 `json:"v2"`
