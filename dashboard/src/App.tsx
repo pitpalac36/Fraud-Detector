@@ -1,9 +1,10 @@
 import React from 'react';
 import './App.css';
 import Transaction, {processData} from "./Transaction";
-import headers from "./headers";
+import headers from "./Headers";
 import { Table } from 'antd';
-import {MyPagination} from './MyPagination'
+import {MyPagination} from './MyPagination';
+import * as dotenv from 'dotenv';
 
 
 
@@ -11,14 +12,16 @@ export class App extends React.Component<{}, { endpoint: string, transactions: T
     constructor(props: any) {
         super(props);
         this.state = {
-            endpoint: "ws://localhost:8084/results",
+            endpoint: "",
             transactions: [],
             columns: headers
         }
     }
 
     componentDidMount() {
-        const ws = new WebSocket(this.state.endpoint);
+        dotenv.config();
+        this.setState({endpoint: process.env.REACT_APP_RESULTS_URL!});
+        const ws = new WebSocket(process.env.REACT_APP_RESULTS_URL!);
         ws.onopen = () => {
         }
         ws.onmessage = e => {
@@ -31,7 +34,7 @@ export class App extends React.Component<{}, { endpoint: string, transactions: T
     render(){
         return(
             <Table dataSource={this.state.transactions} columns={this.state.columns}>
-            <MyPagination/>
+            <MyPagination />
             </Table>
         )}
 }

@@ -16,6 +16,6 @@ export class MyPagination extends React.Component {
     };
 
     render() {
-        return <Pagination current={this.state.current} onChange={this.onChange} total={50} />;
+        return <Pagination current={this.state.current} onChange={this.onChange} defaultPageSize={20}/>;
     }
 }

@@ -1,5 +1,3 @@
-import React from "react";
-
 export default interface Transaction {
     source: string;
     amount: number;
