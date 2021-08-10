@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"reflect"
-	"time"
 )
 
 type TransactionData struct {
@@ -45,13 +44,11 @@ type NormDTO struct {
 
 type Transaction struct {
 	ID        string          `json:"id"`
-	Source    string          `json:"source"`
-	Timestamp time.Time       `json:"timestamp"`
 	Tran      TransactionData `json:"tran"`
 }
 
 func (t Transaction) String() string {
-	return fmt.Sprintf("{ ID: %s, Timestamp: %s, TransactionData: %Tran }", t.ID, t.Timestamp, t.Tran)
+	return fmt.Sprintf("{ ID: %s, TransactionData: %Tran }", t.ID, t.Tran)
 }
 
 func (normDTO NormDTO) String() string {

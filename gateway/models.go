@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"time"
 )
 
 type TransactionData struct {
@@ -39,11 +38,9 @@ type TransactionData struct {
 
 type Transaction struct {
 	ID        string          `json:"id"`
-	Source    string          `json:"source"`
-	Timestamp time.Time       `json:"timestamp"`
 	Tran      TransactionData `json:"tran"`
 }
 
 func (output Transaction) String() string {
-	return fmt.Sprintf("{ ID: %s, Timestamp: %s, TransactionData: %Tran }", output.ID, output.Timestamp, output.Tran)
+	return fmt.Sprintf("{ ID: %s, TransactionData: %Tran }", output.ID, output.Tran)
 }

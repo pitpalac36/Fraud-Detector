@@ -31,9 +31,8 @@ func handleConnection(loadConn net.Conn) {
 		counter++
 		fmt.Println(counter)
 		timestamp := time.Now()
-		output := Transaction{
+		output := Transaction {
 			ID:        encodeAddr(loadConn.RemoteAddr(), timestamp),
-			Timestamp: timestamp,
 			Tran:      *tran,
 		}
 		if err = sendOutput(&output); err != nil {
