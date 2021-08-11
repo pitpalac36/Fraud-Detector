@@ -1,0 +1,16 @@
+version: "3.3"
+services:
+  normalizer:
+    build: ./normalizer
+  denormalizer:
+    build: ./denormalizer
+  aggregator:
+    build: ./aggregator
+  dashboard:
+    build: ./dashboard
+  ai:
+    build: ./algorithm
+  processor:
+    build: ./processor
+  gateway:
+    build: ./gateway

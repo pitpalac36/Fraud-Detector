@@ -14,12 +14,15 @@ var normConn *websocket.Conn
 
 func init() {
 	var err error
-	err = godotenv.Load(".env")
-	if err != nil {
-		log.Fatal("Error loading .env file")
+	log.Println("It works!")
+	if os.Getenv("PRODUCTION") != "1" {
+		err := godotenv.Load(".env")
+		if err != nil {
+			log.Fatal("Error loading .env file")
+		}
 	}
 
-	ln, err = net.Listen("tcp", os.Getenv("PROCESSOR_ADDR"))
+	ln, err = net.Listen("tcp", ":8081")
 	if err != nil {
 		log.Fatal(err.Error())
 	}

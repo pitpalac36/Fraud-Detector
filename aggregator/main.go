@@ -14,9 +14,11 @@ import (
 )
 
 func main() {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatal("Error loading .env file")
+	if os.Getenv("PRODUCTION") != "1" {
+		err := godotenv.Load(".env")
+		if err != nil {
+			log.Fatal("Error loading .env file")
+		}
 	}
 
 	ch := &cache.Cache{
@@ -49,8 +51,8 @@ func main() {
 
 	http.HandleFunc("/", ah.Handle)
 	http.HandleFunc("/results", uh.Handle)
-	addr := os.Getenv("AGGREGATOR_ADDR")
-	if err := http.ListenAndServe(addr, nil); err != nil {
+
+	if err := http.ListenAndServe(":8084", nil); err != nil {
 		log.Fatal(err.Error())
 	}
 }

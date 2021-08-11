@@ -11,12 +11,14 @@ var ln net.Listener
 
 func init() {
 	var err error
-	err = godotenv.Load(".env")
-	if err != nil {
-		log.Fatal("Error loading .env file")
+	if os.Getenv("PRODUCTION") != "1" {
+		err = godotenv.Load(".env")
+		if err != nil {
+			log.Fatal("Error loading .env file")
+		}
 	}
 
-	ln, err = net.Listen("tcp", os.Getenv("GATEWAY_ADDR"))
+	ln, err = net.Listen("tcp", ":8080")
 	if err != nil {
 		log.Fatal(err.Error())
 	}

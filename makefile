@@ -1,4 +1,9 @@
 run-all:
 	python ./normalizer/main.py &
-	go run ./ms1/{main.go, handler.go, models.go} &
-	go run ./gateway/{main.go, handler.go, models.go} &
+	python ./denormalizer/main.py &
+	go run github.com/pitpalac36/Fraud-Detector/aggregator &
+	npm start ./dashboard &
+	python ./algorithm/web.py &
+	go run github.com/pitpalac36/Fraud-Detector/processor &
+	go run github.com/pitpalac36/Fraud-Detector/gateway &
+	go run github.com/pitpalac36/Fraud-Detector/load_test2

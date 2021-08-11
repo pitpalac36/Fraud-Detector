@@ -1,6 +1,6 @@
 module github.com/pitpalac36/Fraud-Detector/aggregator
 
-go 1.16
+go 1.15
 
 require (
 	github.com/go-redis/redis/v8 v8.11.1
