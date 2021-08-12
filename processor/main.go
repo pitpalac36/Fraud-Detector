@@ -14,7 +14,7 @@ var normConn *websocket.Conn
 
 func init() {
 	var err error
-	log.Println("It works!")
+	log.Println("Processor works!")
 	if os.Getenv("PRODUCTION") != "1" {
 		err := godotenv.Load(".env")
 		if err != nil {

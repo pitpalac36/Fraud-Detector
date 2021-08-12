@@ -14,6 +14,7 @@ import (
 )
 
 func main() {
+	log.Println("Aggregator works!")
 	if os.Getenv("PRODUCTION") != "1" {
 		err := godotenv.Load(".env")
 		if err != nil {

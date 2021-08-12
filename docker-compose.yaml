@@ -1,16 +1,38 @@
 version: "3.3"
 services:
+  redis:
+    image: "redis:alpine"
+    command: redis-server
+    environment:
+      - REDIS_REPLICATION_MODE=master
   normalizer:
     build: ./normalizer
   denormalizer:
     build: ./denormalizer
   aggregator:
     build: ./aggregator
+    links:
+      - denormalizer
+    ports:
+      - "8084:8084"
   dashboard:
     build: ./dashboard
+    ports:
+      - "3000:3000"
+    links:
+      - aggregator
   ai:
     build: ./algorithm
+    links:
+      - aggregator
   processor:
     build: ./processor
+    links:
+      - normalizer
+      - ai
   gateway:
     build: ./gateway
+    ports:
+      - "8080:8080"
+    links:
+      - processor

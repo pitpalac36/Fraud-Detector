@@ -19,7 +19,9 @@ export class App extends React.Component<{}, { endpoint: string, transactions: T
     }
 
     componentDidMount() {
-        dotenv.config();
+        if(process.env.PRODUCTION !== "1") {
+            dotenv.config();
+        }
         this.setState({endpoint: process.env.REACT_APP_RESULTS_URL!});
         const ws = new WebSocket(process.env.REACT_APP_RESULTS_URL!);
         ws.onopen = () => {

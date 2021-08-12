@@ -4,7 +4,11 @@ WORKDIR /normalizer
 
 COPY . .
 
-ENV PRODUCTION=1
+ENV PRODUCTION 1
+ENV SCALER_FILE ./scaler_info.pickle
+ENV ADDRESS normalizer
+ENV PORT 8082
+ENV WS_URL ws://normalizer:8082
 
 RUN pip3 install sklearn numpy websockets python-dotenv dataclasses_json
 

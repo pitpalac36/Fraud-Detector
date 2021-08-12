@@ -7,7 +7,12 @@ COPY utils ./utils
 COPY web.py ./web.py
 COPY pickle_data ./pickle_data
 
-ENV PRODUCTION=1
+ENV PRODUCTION 1
+ENV SCALER_FILE ./pickle_data/scaler_info.pickle
+ENV REGRESSOR_FILE ./pickle_data/lr_info.pickle
+ENV AI_ADDRESS ai
+ENV AI_PORT 8083
+ENV AGGREGATOR_URL ws://aggregator:8084/
 
 RUN pip3 install sklearn
 RUN pip3 install pandas

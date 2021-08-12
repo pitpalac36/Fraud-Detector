@@ -32,6 +32,7 @@ async def handler(websocket, path):
 
 
 if __name__ == '__main__':
+    print('Denormalizer works!')
     address, port = get_address_and_port()
     event_loop = asyncio.get_event_loop()
     start_server = websockets.serve(handler, address, port, ping_interval=None)

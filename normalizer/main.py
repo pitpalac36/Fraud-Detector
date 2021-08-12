@@ -5,10 +5,11 @@ import base64
 import json
 
 import websockets
+import pickle
 
 from models import NormDTO
 from normalizer import normalization
-from utils.env_utils import get_address_and_port
+from utils.env_utils import get_address_and_port, get_scaler_file
 
 
 async def handler(websocket, path):
@@ -31,6 +32,7 @@ async def handler(websocket, path):
 
 
 if __name__ == '__main__':
+    print('Normalizer works!')
     address, port = get_address_and_port()
     event_loop = asyncio.get_event_loop()
     start_server = websockets.serve(handler, address, port, ping_interval=None)

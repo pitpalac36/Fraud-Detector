@@ -29,7 +29,6 @@ func (h *UIHandler) Handle(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	fmt.Println("hey")
 	var res models.Prediction
 	for {
 		select {

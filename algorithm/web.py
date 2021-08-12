@@ -38,6 +38,7 @@ async def send_handler(result_dto):
 
 
 async def main():
+    print('Algorithm works!')
     nest_asyncio.apply()
     address = get_address()
     port = get_port()

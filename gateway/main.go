@@ -11,6 +11,7 @@ var ln net.Listener
 
 func init() {
 	var err error
+	log.Println("Gateway works!")
 	if os.Getenv("PRODUCTION") != "1" {
 		err = godotenv.Load(".env")
 		if err != nil {
