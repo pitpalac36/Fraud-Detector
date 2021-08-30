@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gorilla/websocket"
 	"io"
 	"log"
@@ -37,7 +36,7 @@ func handleConnection(gatewayConn net.Conn, normConn *websocket.Conn) {
 			log.Fatal(err.Error())
 		} else {
 			counter++
-			fmt.Println(counter)
+			//fmt.Println(counter)
 		}
 	}
 }

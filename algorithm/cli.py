@@ -41,9 +41,6 @@ def test_model(testInputs, testOutputs):
     # get confusion matrix elements
     false_negative, false_positive, true_positive, true_negative = get_confusion_matrix(lr, testInputs, testOutputs)
 
-    print('TEST INPUT :')
-    print(testInputs[0])
-
     # view performance resume
     print("test data size: " + str(len(testInputs)))
     print("predicted correctly: " + str(len(testInputs) - false_positive - false_negative))
@@ -81,5 +78,5 @@ if __name__ == '__main__':
     # split data into train inputs and train outputs
     trainInputs, trainOutputs, testInputs, testOutputs = split_data(normalisedInputs, outputs)
 
-    train_model(trainInputs, trainOutputs)
+    # train_model(trainInputs, trainOutputs)
     test_model(testInputs, testOutputs)

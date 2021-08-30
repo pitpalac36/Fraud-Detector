@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/gorilla/websocket"
 	"github.com/joho/godotenv"
 	"log"
@@ -36,7 +35,7 @@ func init() {
 func main() {
 	defer func() {
 		err := normConn.Close()
-		fmt.Println("Closing normalizer web socket")
+		//fmt.Println("Closing normalizer web socket")
 		if err != nil {
 			log.Fatal(err.Error())
 		}

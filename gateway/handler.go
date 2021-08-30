@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"net"
@@ -29,7 +28,7 @@ func handleConnection(loadConn net.Conn) {
 			log.Fatal(err.Error())
 		}
 		counter++
-		fmt.Println(counter)
+		//fmt.Println(counter)
 		timestamp := time.Now()
 		output := Transaction {
 			ID:        encodeAddr(loadConn.RemoteAddr(), timestamp),
@@ -65,6 +64,6 @@ func sendOutput(output *Transaction) error {
 		return err
 	}
 	counter++
-	fmt.Println(output)
+	//fmt.Println(output)
 	return nil
 }

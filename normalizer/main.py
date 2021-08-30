@@ -22,12 +22,12 @@ async def handler(websocket, path):
             norm_dto = base64.b64decode(buffer)
             json_data = json.loads(norm_dto.decode('UTF-8'))
             result = NormDTO(json_data['tran_id'], normalization(scaler, json_data['data']))
-            print(result.to_json())
+            # print(result.to_json())
             await websocket.send(result.to_json())
             counter += 1
-            print(counter)
+            # print(counter)
     except websockets.exceptions.ConnectionClosedError:
-        print("error")
+        print("Connection closed error")
         return
 
 

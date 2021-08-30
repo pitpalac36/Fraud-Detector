@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"github.com/gorilla/websocket"
 	"github.com/pitpalac36/Fraud-Detector/aggregator/models"
 	"log"
@@ -33,7 +32,7 @@ func (h *UIHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	for {
 		select {
 			case res = <- h.PredictionChan:
-				fmt.Println(*res.ToResponse())
+				//fmt.Println(*res.ToResponse())
 				if err = h.Conn.WriteJSON(res.ToResponse()); err != nil {
 					log.Fatal(err)
 				}
